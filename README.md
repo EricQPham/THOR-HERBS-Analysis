@@ -4,3 +4,6 @@ Napalm Analysis of the Theater of Operations Records during the Vietnam War and 
 THOR data: https://data.world/datamil/vietnam-war-thor-data
 
 Herbs data: https://www.workerveteranhealth.org/milherbs/new/herbs.php?s=2
+
+Code is found in the file HIS_Thesis.Rmd
+RStudio and R were utilized
