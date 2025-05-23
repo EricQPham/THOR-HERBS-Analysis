@@ -1,0 +1,286 @@
+---
+title: "HIS 104"
+author: "Eric Pham"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+```{r packages}
+library(tidyverse)
+library(scales)
+```
+
+```{r data upload}
+options(timeout = 600)
+herbs <- read.csv("HIS 104 HERBS  - Sheet2.csv")
+gloss <- read.csv("THOR_VIET_WEAPON_GLOSS.csv")
+thor_65 <- read.csv("https://query.data.world/s/tmyzycriex5f53tfkn4d3gbbdqz2lw?dws=00000", header=TRUE, stringsAsFactors=FALSE);
+thor_66_0 <- read.csv("https://query.data.world/s/qeovrvehkwsdpgdmq4z7rwhclwq7kw?dws=00000", header=TRUE, stringsAsFactors=FALSE);
+thor_66_1 <- read.csv("https://query.data.world/s/5dow45mqnyvd5z5f7letf45buchplp?dws=00000", header=TRUE, stringsAsFactors=FALSE);
+thor_67_0 <- read.csv("https://query.data.world/s/mbjtyw3cood3j77ju3qwfgms5pa6us?dws=00000", header=TRUE, stringsAsFactors=FALSE);
+thor_67_1 <- read.csv("https://query.data.world/s/af3rblp6u3jlesn27tzlvw7w5x2kbc?dws=00000", header=TRUE, stringsAsFactors=FALSE);
+thor_67_2 <- read.csv("https://query.data.world/s/hhcb2xxg64s55wnxvkmdbqml5a6ao7?dws=00000", header=TRUE, stringsAsFactors=FALSE);
+thor_67_oct <- read.csv("https://query.data.world/s/pjnio7cxaijp6ijrlbasboenrtcrge?dws=00000", header=TRUE, stringsAsFactors=FALSE);
+thor_68_0 <- read.csv("https://query.data.world/s/zhm5a7yixpwudoujku63ta5bn2ke2y?dws=00000", header=TRUE, stringsAsFactors=FALSE);
+thor_68_1 <- read.csv("https://query.data.world/s/hqmtdmjswhkb3xqxf3y4hnhehgicsf?dws=00000", header=TRUE, stringsAsFactors=FALSE);
+thor_68_2 <- read.csv("https://query.data.world/s/ahict7ucp343avxjwtf3sn36jmpj3g?dws=00000", header=TRUE, stringsAsFactors=FALSE);
+thor_68_3 <- read.csv("https://query.data.world/s/2v3lopwhudvxaza7y5ckzfp5hgv2wx?dws=00000", header=TRUE, stringsAsFactors=FALSE);
+thor_69_0 <- read.csv("https://query.data.world/s/sg6euvtuonyinh56xg7sfp5jjgcwt6?dws=00000", header=TRUE, stringsAsFactors=FALSE);
+thor_69_1 <- read.csv("https://query.data.world/s/dyk6powehapsgyh7hs2cq4rryh3boh?dws=00000", header=TRUE, stringsAsFactors=FALSE);
+thor_69_2 <- read.csv("https://query.data.world/s/tvu7gvjxy57esxpgpbizstriiv5gfu?dws=00000", header=TRUE, stringsAsFactors=FALSE);
+thor_70_0 <- read.csv("https://query.data.world/s/gnm3zrwfdvqx3ddkcpu5osgc6qo6bh?dws=00000", header=TRUE, stringsAsFactors=FALSE);
+thor_70_1 <- read.csv("https://query.data.world/s/cl5y2unkpzcursiefa5ismw7hneocm?dws=00000", header=TRUE, stringsAsFactors=FALSE);
+thor_70_2 <- read.csv("https://query.data.world/s/fnseluzexa7mmtwap5vjmlec4fm5yv?dws=00000", header=TRUE, stringsAsFactors=FALSE);
+thor_71_0 <- read.csv("https://query.data.world/s/jdeae7lym7svcriq3n5yqzhdudjqfo?dws=00000", header=TRUE, stringsAsFactors=FALSE);
+thor_71_1 <- read.csv("https://query.data.world/s/5f6wt37wquxysgzcijqpqgxqevochc?dws=00000", header=TRUE, stringsAsFactors=FALSE);
+thor_72_0 <- read.csv("https://query.data.world/s/6plizswga4tmjzwla3irstjgh4iwck?dws=00000", header=TRUE, stringsAsFactors=FALSE);
+thor_72_1 <- read.csv("https://query.data.world/s/nxsjw7ndenlqentdtktzs2t222wc2q?dws=00000", header=TRUE, stringsAsFactors=FALSE);
+thor_73 <- read.csv("https://query.data.world/s/esefwdu5baeuklsedhlol2csh3o25y?dws=00000", header=TRUE, stringsAsFactors=FALSE);
+thor_74 <- read.csv("https://query.data.world/s/vwbynszevmictw4orbwclhhrd6wf6q?dws=00000", header=TRUE, stringsAsFactors=FALSE);
+thor_75 <- read.csv("https://query.data.world/s/dxxxwts6neab2mh24vyeirhrt2zmc4?dws=00000", header=TRUE, stringsAsFactors=FALSE);
+```
+
+```{r herbs data clean up}
+colnames(herbs)[colnames(herbs) == "Date..MM_YY."] <- "Date_MM_YY"
+herbs$Year <- sub(".*_(\\d{2})$", "\\1", herbs$Date_MM_YY)
+colnames(herbs)[colnames(herbs) == "Agent"] <- "Weapon"
+colnames(herbs)[colnames(herbs) == "Gallons"] <- "Amount"
+herbs_final <- herbs %>%
+  group_by(Weapon, Year) %>%
+  summarize(total_amount = sum(Amount, na.rm = TRUE), .groups = 'drop')
+herbs_final <- herbs_final[order(herbs_final$Year), ]
+```
+
+```{r herbs graph}
+ggplot(herbs_final, aes(x = Year, y = total_amount, color = Weapon, group = Weapon)) +
+  geom_line() +   
+  geom_point() +  
+  labs(
+    title = "Useage of Herbicides during the Vietnam War",
+    x = "Year",
+    y = "Gallons",
+    color = "Weapon Type"
+  ) +
+  scale_y_continuous(labels = comma) +
+    scale_color_manual(values = c("Blue" = "blue", "Orange" = "orange", "Pink" = "pink", "Purple" = "purple", "White" = "gray")) + 
+  theme_minimal()
+```
+
+```{r thor data clean up}
+thor <- rbind(thor_65, thor_66_0, thor_66_1, thor_67_0, thor_67_1, thor_67_2, thor_67_oct, thor_68_0, thor_68_1, thor_68_2, thor_68_3, thor_69_0, thor_69_1, thor_69_2, thor_70_0, thor_70_1, thor_70_2, thor_71_0, thor_71_1, thor_72_0, thor_72_1, thor_73, thor_74, thor_75)
+
+thor_sub_1 <- thor %>%
+  filter(WEAPONTYPE %in% c("250LB BLU-10", "500BLU11/23/32", "750LB BLU-1/27", "BLU10B FIRE BOMB (250)", "BLU1B FIRE BOMB (750)", "BLU23B FIRE BOMB (500)", "BLU27 FIRE BOMB (750)", "BLU32B FIRE BOMB (500)", "MK77 NAPALM")) %>%
+  filter(TGTCOUNTRY %in% c("NORTH VIETNAM", "SOUTH VIETNAM")) %>%
+  mutate(total_amount = NUMWEAPONSDELIVERED * WEAPONTYPEWEIGHT) %>%
+  select(WEAPONTYPE, Year, total_amount)
+
+thor_sub_1 <- thor_sub_1 %>%
+  mutate(WEAPONTYPE = recode(WEAPONTYPE,
+                             "250LB BLU-10" = "Napalm", 
+                             "500BLU11/23/32" = "Napalm", 
+                             "750LB BLU-1/27" = "Napalm", 
+                             "BLU10B FIRE BOMB (250)" = "Napalm", 
+                             "BLU1B FIRE BOMB (750)" = "Napalm", 
+                             "BLU23B FIRE BOMB (500)" = "Napalm", 
+                             "BLU27 FIRE BOMB (750)" = "Napalm", 
+                             "BLU32B FIRE BOMB (500)" = "Napalm",
+                             "MK77 NAPALM" = "Napalm")) %>%
+   mutate(Year = as.integer(substr(as.character(Year), 3, 4)))
+
+colnames(thor_sub_1)[colnames(thor_sub_1) == "WEAPONTYPE"] <- "Weapon"
+colnames(thor_sub_1)[colnames(thor_sub_1) == "total_amount"] <- "Amount"
+thor_sub_1$Amount <- thor_sub_1$Amount/2000
+thor_sub_1$Year <- as.integer(thor_sub_1$Year)
+
+thor_final_1 <- thor_sub_1 %>%
+  group_by(Weapon, Year) %>%
+  summarize(total_amount = sum(Amount, na.rm = TRUE), .groups = 'drop')
+sum(thor_final_1$total_amount)
+```
+
+```{r thor graph}
+ggplot(thor_final_1, aes(x = factor(Year), y = total_amount, fill = Weapon)) + 
+  geom_col(position = "dodge", fill = "brown1") +   
+  labs(
+    title = "Napalm in Vietnam, 1965-1975",
+    x = "Year",
+    y = "Tons",
+    fill = "Weapon"
+  ) + 
+  scale_y_continuous(labels = comma) +  
+  scale_x_discrete() +             
+  theme_classic() 
+```
+
+```{r herbs/thor graph}
+herbs_final_1 <- herbs_final
+herbs_final_1$total_amount <- herbs_final_1$total_amount/100
+herbs_thor <- rbind(herbs_final_1, thor_final_1)
+herbs_thor$Weapon <- factor(herbs_thor$Weapon, levels = c("Napalm", "Blue", "Orange", "Pink", "Purple", "White"))
+herbs_thor$Year <- as.factor(herbs_thor$Year)
+
+ggplot(herbs_thor, aes(x = Year, y = total_amount, color = Weapon, group = Weapon)) +
+  geom_line() +   
+  geom_point() +  
+  labs(
+    title = "Herbicides and Napalm during the Vietnam War",
+    x = "Year",
+    y = "Tons of Napalm and Hundred Gallons of Herbicides",
+    color = "Weapon"
+  ) +
+  scale_y_continuous(labels = comma) +
+  scale_x_discrete(labels = function(x) format(as.numeric(x), nsmall = 0)) +
+  scale_color_manual(values = c("Napalm" = "black", "Blue" = "blue", "Orange" = "orange", "Pink" = "pink", "Purple" = "purple", "White" = "gray")) + 
+  theme_minimal()
+```
+
+```{r napalm in indochina}
+unique(thor$TGTCOUNTRY)
+
+# include North Vietnam, South Vietnam, Laos, Thailand, and Cambodia in Indochina Definition
+
+thor_sub_2 <- thor %>%
+  filter(WEAPONTYPE %in% c("250LB BLU-10", "500BLU11/23/32", "750LB BLU-1/27", "BLU10B FIRE BOMB (250)", "BLU1B FIRE BOMB (750)", "BLU23B FIRE BOMB (500)", "BLU27 FIRE BOMB (750)", "BLU32B FIRE BOMB (500)", "MK77 NAPALM")) %>%
+  filter(TGTCOUNTRY %in% c("NORTH VIETNAM", "SOUTH VIETNAM", "LAOS", "THAILAND", "CAMBODIA")) %>%
+  mutate(total_amount = NUMWEAPONSDELIVERED * WEAPONTYPEWEIGHT) %>%
+  select(WEAPONTYPE, Year, total_amount)
+
+thor_sub_2 <- thor_sub_2 %>%
+  mutate(WEAPONTYPE = recode(WEAPONTYPE,
+                             "250LB BLU-10" = "Napalm", 
+                             "500BLU11/23/32" = "Napalm", 
+                             "750LB BLU-1/27" = "Napalm", 
+                             "BLU10B FIRE BOMB (250)" = "Napalm", 
+                             "BLU1B FIRE BOMB (750)" = "Napalm", 
+                             "BLU23B FIRE BOMB (500)" = "Napalm", 
+                             "BLU27 FIRE BOMB (750)" = "Napalm", 
+                             "BLU32B FIRE BOMB (500)" = "Napalm",
+                             "MK77 NAPALM" = "Napalm")) %>%
+   mutate(Year = as.integer(substr(as.character(Year), 3, 4)))
+
+colnames(thor_sub_2)[colnames(thor_sub_2) == "WEAPONTYPE"] <- "Weapon"
+colnames(thor_sub_2)[colnames(thor_sub_2) == "total_amount"] <- "Amount"
+thor_sub_2$Amount <- thor_sub_2$Amount/2000
+thor_sub_2$Year <- as.integer(thor_sub_2$Year)
+
+thor_final_2 <- thor_sub_2 %>%
+  group_by(Weapon, Year) %>%
+  summarize(total_amount = sum(Amount, na.rm = TRUE), .groups = 'drop')
+sum(thor_final_2$total_amount)
+```
+
+```{r thor indochina graph}
+ggplot(thor_final_2, aes(x = factor(Year), y = total_amount, fill = Weapon)) +
+  geom_col(position = "dodge") +   
+  labs(
+    title = "Napalm in Indochina during the Vietnam War",
+    x = "Year",
+    y = "Tons",
+    fill = "Weapon"
+  ) +
+  scale_y_continuous(labels = comma) +  
+  scale_x_discrete() +             
+  theme_minimal() 
+```
+
+```{r napalm total}
+thor_sub_3 <- thor %>%
+  filter(WEAPONTYPE %in% c("250LB BLU-10", "500BLU11/23/32", "750LB BLU-1/27", "BLU10B FIRE BOMB (250)", "BLU1B FIRE BOMB (750)", "BLU23B FIRE BOMB (500)", "BLU27 FIRE BOMB (750)", "BLU32B FIRE BOMB (500)", "MK77 NAPALM")) %>%
+  mutate(total_amount = NUMWEAPONSDELIVERED * WEAPONTYPEWEIGHT) %>%
+  select(WEAPONTYPE, Year, total_amount)
+
+thor_sub_3 <- thor_sub_3 %>%
+  mutate(WEAPONTYPE = recode(WEAPONTYPE,
+                             "250LB BLU-10" = "Napalm", 
+                             "500BLU11/23/32" = "Napalm", 
+                             "750LB BLU-1/27" = "Napalm", 
+                             "BLU10B FIRE BOMB (250)" = "Napalm", 
+                             "BLU1B FIRE BOMB (750)" = "Napalm", 
+                             "BLU23B FIRE BOMB (500)" = "Napalm", 
+                             "BLU27 FIRE BOMB (750)" = "Napalm", 
+                             "BLU32B FIRE BOMB (500)" = "Napalm",
+                             "MK77 NAPALM" = "Napalm")) %>%
+   mutate(Year = as.integer(substr(as.character(Year), 3, 4)))
+
+colnames(thor_sub_3)[colnames(thor_sub_3) == "WEAPONTYPE"] <- "Weapon"
+colnames(thor_sub_3)[colnames(thor_sub_3) == "total_amount"] <- "Amount"
+thor_sub_3$Amount <- thor_sub_3$Amount/2000
+thor_sub_3$Year <- as.integer(thor_sub_3$Year)
+
+thor_final_3 <- thor_sub_3 %>%
+  group_by(Weapon, Year) %>%
+  summarize(total_amount = sum(Amount, na.rm = TRUE), .groups = 'drop')
+sum(thor_final_3$total_amount)
+```
+
+```{r thor total graph}
+ggplot(thor_final_3, aes(x = factor(Year), y = total_amount, fill = Weapon)) +
+  geom_col(position = "dodge") +   
+  labs(
+    title = "Napalm in Indochina during the Vietnam War",
+    x = "Year",
+    y = "Tons",
+    fill = "Weapon"
+  ) +
+  scale_y_continuous(labels = comma) +  
+  scale_x_discrete() +             
+  theme_minimal() 
+```
+
+```{r herbs/thor correlation}
+herbs_combined <- herbs_final
+herbs_combined$Weapon <- "Herbicide"
+herbs_combined <- herbs_combined %>%
+  group_by(Year, Weapon) %>%
+  summarize(total_amount = sum(total_amount, na.rm = TRUE))
+herbs_thor_combined <- merge(herbs_combined, thor_final_3, by = "Year") 
+
+herbs_thor_combined <- herbs_thor_combined %>%
+  rename(
+    `Herbicides` = `total_amount.x`
+    )
+
+herbs_thor_combined <- herbs_thor_combined %>%
+  rename(
+    `Napalm` = `total_amount.y`
+    )
+
+herbs_thor_combined$Herbicides <- herbs_thor_combined$Herbicides/1000000
+
+plot(herbs_thor_combined$Herbicides, herbs_thor_combined$Napalm, col = "blue",
+     xlab = "Herbicides (Millions of Gallons)",
+     ylab = "Napalm (Tons)")
+title(main = "Herbicides vs. Napalm per year (1965-1971)")
+abline(lm(herbs_thor_combined$Napalm ~ herbs_thor_combined$Herbicides), col = "red")
+cor(herbs_thor_combined$Herbicides, herbs_thor_combined$Napalm)
+```
+
+```{r napalm and American casulaties}
+# Creating the data frame
+cas <- data.frame(
+  Year = c(65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75), 
+  American_casualties = c(1928, 6350, 11363, 16899, 11780, 6173, 2414, 759, 68, 1, 62)
+)
+thor_cas <- merge(cas, thor_final_3, by = "Year")
+thor_cas <- rename(thor_cas, Napalm = total_amount)
+plot(thor_cas$American_casualties, thor_cas$Napalm, col = "blue",
+     xlab = "American Casualties",
+     ylab = "Napalm (Tons)")
+title(main = "American Casulaties vs. Napalm by year (1965-1975)")
+abline(lm(thor_cas$Napalm ~ thor_cas$American_casualties), col = "red")
+cor(thor_cas$American_casualties, thor_cas$Napalm)
+```
+
+```{r Herbicides and American casulaties}
+herbs_cas <- merge(cas, herbs_combined, by = "Year")
+herbs_cas$total_amount <- herbs_cas$total_amount/1000000
+plot(herbs_cas$American_casualties, herbs_cas$total_amount, col = "blue",
+     xlab = "American Casualties",
+     ylab = "Herbicdes (Millions of Gallons)")
+title(main = "American Casulaties vs. Herbicides by year (1965-1971)")
+abline(lm(herbs_cas$total_amount ~ herbs_cas$American_casualties), col = "red")
+cor(herbs_cas$American_casualties, herbs_cas$total_amount)
+```
+
+
